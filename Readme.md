@@ -16,24 +16,23 @@ This study investigates how public deep learning models for diabetic retinopathy
 ## 📁 Folder Structure
 
 Fundus_Artifact_Project/
+├── APTOS_2019/                    → Original APTOS dataset
+│   ├── train_images/             → Raw fundus images
+│   └── train.csv                 → DR labels
 │
-├── APTOS_2019/                     # Original APTOS dataset
-│   ├── train_images/              # Raw fundus images
-│   └── train.csv                  # DR labels
+├── Messidor_2/                   → Messidor-2 dataset for external validation
+│   └── dataset.zip              → Original compressed files
 │
-├── Messidor_2/                     # Messidor-2 dataset for external validation
-│   └── dataset.zip                # Original compressed files
+├── Binary_Border_Classifier/     → Data and models for border classifier
+├── Raw_DR_Classifier/            → Data and models for raw (unprocessed) DR classifier
 │
-├── Binary_Border_Classifier/       # Data and models for border classifier
-├── Raw_DR_Classifier/              # Data and models for raw (unprocessed) DR classifier
+├── Results/                      → All model outputs, logs, and visualizations
+│   ├── border_artifact_model/  → Border classifier results
+│   ├── raw_image_model/        → Raw DR model results
+│   ├── dr_artifact_model/      → Clean DR model results (after preprocessing)
+│   └── final_figures/          → Final visual figures used in the paper
 │
-├── Results/                        # All model outputs, logs, and visualizations
-│   ├── border_artifact_model/    # Border classifier results
-│   ├── raw_image_model/          # Raw DR model results
-│   ├── dr_artifact_model/        # Clean DR model results (after preprocessing)
-│   └── final_figures/            # Final visual figures used in the paper
-│
-├── Notebooks/                      # Complete training and evaluation notebooks
+├── Notebooks/                    → Complete training and evaluation notebooks
 │   ├── 01_Dataset_Inspection.ipynb
 │   ├── 02_Border_Classifier.ipynb
 │   ├── 03_Raw_DR_Model.ipynb
