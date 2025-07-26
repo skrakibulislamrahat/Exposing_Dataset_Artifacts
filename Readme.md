@@ -17,23 +17,23 @@ This study investigates how public deep learning models for diabetic retinopathy
 
 Fundus_Artifact_Project/
 │
-├── APTOS_2019/
-│   ├── train_images/
-│   └── train.csv
+├── APTOS_2019/                 # Original APTOS dataset
+│   ├── train_images/           # Raw fundus images
+│   └── train.csv               # DR labels
 │
-├── Messidor_2/
-│   └── dataset.zip
+├── Messidor_2/                 # Messidor-2 dataset for external validation
+│   └── dataset.zip             # Original compressed files
 │
-├── Binary_Border_Classifier/
-├── Raw_DR_Classifier/
+├── Binary_Border_Classifier/   # Data and models for border classifier
+├── Raw_DR_Classifier/          # Data and models for raw (unprocessed) DR classifier
 │
-├── Results/
-│   ├── border_artifact_model/
-│   ├── raw_image_model/
-│   ├── dr_artifact_model/
-│   └── final_figures/       ✅ All paper visuals stored here
+├── Results/                    # All model outputs, logs, and visualizations
+│   ├── border_artifact_model/  # Border classifier results
+│   ├── raw_image_model/        # Raw DR model results
+│   ├── dr_artifact_model/      # Clean DR model results (after preprocessing)
+│   └── final_figures/          # Final visual figures used in the paper
 │
-├── Notebooks/
+├── Notebooks/                  # Complete training and evaluation notebooks
 │   ├── 01_Dataset_Inspection.ipynb
 │   ├── 02_Border_Classifier.ipynb
 │   ├── 03_Raw_DR_Model.ipynb
