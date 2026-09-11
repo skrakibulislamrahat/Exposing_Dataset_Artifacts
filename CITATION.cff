@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this research code, please cite the repository and the associated paper once stable publication metadata is available."
+title: "Exposing Dataset Artifacts in Medical AI"
+type: software
+authors:
+  - family-names: "Rahat"
+    given-names: "SK Rakib Ul Islam"
+    orcid: "https://orcid.org/0009-0005-0744-8398"
+repository-code: "https://github.com/skrakibulislamrahat/Exposing_Dataset_Artifacts"
+url: "https://github.com/skrakibulislamrahat/Exposing_Dataset_Artifacts"
+abstract: "Reproducibility code for auditing artifact-driven shortcut learning in diabetic-retinopathy fundus-image models, including artifact-aware preprocessing, interpretability analysis, and external validation."
+keywords:
+  - trustworthy AI
+  - medical imaging
+  - diabetic retinopathy
+  - shortcut learning
+  - dataset artifacts
+  - external validation
+license: "NOASSERTION"
