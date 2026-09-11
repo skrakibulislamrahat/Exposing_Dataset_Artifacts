@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data and model artifacts
+data/
+datasets/
+APTOS_2019/
+Messidor_2/
+*.zip
+*.pt
+*.pth
+*.ckpt
+
+# Generated outputs
+Results/
+results/
+outputs/
+runs/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
