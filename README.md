@@ -1,5 +1,7 @@
 # Exposing Dataset Artifacts in Medical AI
 
+> **Research hub:** [Portfolio view](https://skrakibulislamrahat.github.io/#project-artifacts) · [Reproducibility guide](REPRODUCIBILITY.md) · [Data availability](DATA_AVAILABILITY.md) · [Citation metadata](CITATION.cff)
+
 ## When fundus-image models learn acquisition artifacts instead of disease
 
 This repository contains the reproducibility code for a research study on **dataset artifacts and shortcut learning in diabetic-retinopathy (DR) classification**. The central question is whether a retinal classifier can achieve apparently strong performance while relying on non-clinical image cues such as borders, padding, or acquisition-specific appearance.
