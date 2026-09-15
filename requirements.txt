@@ -5,6 +5,7 @@ seaborn
 opencv-python
 Pillow
 scikit-learn
+scipy
 tqdm
 torch
 torchvision
