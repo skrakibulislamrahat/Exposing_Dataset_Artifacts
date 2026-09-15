@@ -1,62 +1,39 @@
-# Exposing Dataset Artifacts in Medical AI
+# Reduced background sensitivity does not ensure external discrimination in fundus classifiers
 
-> **Research hub:** [Portfolio view](https://skrakibulislamrahat.github.io/#project-artifacts) · [Reproducibility guide](REPRODUCIBILITY.md) · [Data availability](DATA_AVAILABILITY.md) · [Citation metadata](CITATION.cff)
+This repository contains the public research code and documentation for a diabetic-retinopathy (DR) fundus-image study of background shortcut sensitivity, artifact-aware border cropping, and cross-dataset generalization.
 
-## When fundus-image models learn acquisition artifacts instead of disease
+The final study asks a specific question: **if a preprocessing/training regime makes a classifier less responsive to selected non-retinal background interventions, does external discrimination improve?** The answer in these experiments is no. The relationship is architecture-dependent.
 
-This repository contains the reproducibility code for a research study on **dataset artifacts and shortcut learning in diabetic-retinopathy (DR) classification**. The central question is whether a retinal classifier can achieve apparently strong performance while relying on non-clinical image cues such as borders, padding, or acquisition-specific appearance.
+## Final experimental design
 
-The project compares models trained on original fundus images with models trained after artifact-aware preprocessing, and then evaluates generalization on an external retinal dataset.
+- Development dataset: APTOS 2019, binary endpoint grade 0 vs grade >0.
+- Fixed stratified image split: 2,563 train / 549 validation / 550 test (split seed 2026).
+- Architectures: ResNet-18 and EfficientNet-B0.
+- Training regimes: original framing (RAW) and intensity-based border-cropped framing (CLEAN).
+- Training seeds: 13, 42, 77.
+- Total trained variants: 12.
+- External evaluation: 1,744 gradable images from the project's existing processed Messidor-2 archive.
+- Messidor-2 was not used for training, early stopping, checkpoint selection, calibration fitting, or threshold selection.
 
-## Research questions
+The main robustness comparison evaluates RAW- and CLEAN-trained models on **identical raw APTOS inputs**. Background interventions include gray replacement, background noise, and peripheral-ring perturbations at multiple severities. The final audit also includes validation-only temperature scaling and threshold selection, background-only label probes, source classification, quantitative Grad-CAM, and exact/perceptual/embedding-based duplicate checks.
 
-1. Can a CNN explicitly detect border/acquisition artifacts in fundus images?
-2. Do DR classifiers trained on unprocessed images attend to those artifacts?
-3. Does artifact-aware preprocessing change model attention and predictive behavior?
-4. Does the resulting model generalize more reliably to an external dataset?
+## Main findings
 
-## Experimental pipeline
+Across the 12 variants, APTOS test ROC-AUC was approximately 0.9963-0.9992, whereas external Messidor-2 ROC-AUC was approximately 0.5643-0.6642.
 
-| Stage | Notebook | Purpose |
-|---|---|---|
-| 1 | `notebooks/01_dataset_inspection.ipynb` | Inspect APTOS 2019 and Messidor-2 metadata/images and audit dataset availability. |
-| 2 | `notebooks/02_border_artifact_classifier.ipynb` | Train a ResNet-based classifier to detect border artifacts and inspect attention with Grad-CAM. |
-| 3 | `notebooks/03_train_model_with_artifacts.ipynb` | Train the baseline DR classifier on images that retain acquisition artifacts. |
-| 4 | `notebooks/04_preprocess_and_clean_images.ipynb` | Apply artifact-aware preprocessing to produce cleaned fundus images. |
-| 5 | `notebooks/05_train_model_without_artifacts.ipynb` | Train the DR classifier on preprocessed images and generate interpretability outputs. |
-| 6 | `notebooks/06_external_validation_messidor2.ipynb` | Evaluate the trained model on Messidor-2 using accuracy, ROC-AUC, ROC curves, and confusion matrices. |
+On identical raw APTOS inputs, CLEAN training reduced EfficientNet-B0's mean strongest-level background sensitivity by about 49%, while ResNet-18 started substantially lower and changed only modestly and inconsistently. A similar EfficientNet reduction appeared on the common Messidor representation. Despite that reduction, EfficientNet-B0 external ROC-AUC decreased under CLEAN training. ResNet-18 showed no consistent architecture-level external improvement.
 
-The manuscript-assembly notebook is intentionally **not** included. This repository is for research code and reproducibility, not for distributing unpublished manuscript drafts.
+The audit also found strong label-associated information outside the estimated retinal field, complete separability between the available APTOS and processed Messidor representations using both low-level and frozen-image features, and cross-split duplicate/near-duplicate structure in APTOS. Near-duplicate exclusion analyses did not explain away the near-ceiling internal AUC or the background-only label signal. These results do **not** establish patient-independent internal validation because patient identifiers were unavailable.
 
-## Datasets
-
-The experiments use two public retinal-imaging resources:
-
-- **APTOS 2019 Blindness Detection** — primary development dataset.
-- **Messidor-2** — external validation dataset.
-
-Dataset files are not redistributed here. Users are responsible for obtaining the datasets from their official sources and complying with their licenses and terms. See [`DATA_AVAILABILITY.md`](DATA_AVAILABILITY.md).
-
-## Methods represented in the code
-
-The notebooks use Python with PyTorch/torchvision, OpenCV, pandas, NumPy, scikit-learn, Matplotlib, Seaborn, Pillow, TorchCAM, and `pytorch-grad-cam`. The experimental code includes ResNet-based classification, artifact-aware image preprocessing, Grad-CAM-style interpretability, and external-validation metrics.
-
-## Reproducibility
-
-The original experiments were developed in Google Colab and use paths under:
-
-```text
-/content/drive/MyDrive/Fundus_Artifact_Project
-```
-
-Update the path configuration for your environment before execution. The public notebooks have had stored outputs and volatile Colab execution metadata removed so the repository reflects the executable analysis rather than cached results.
-
-For the recommended execution order and environment notes, see [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md).
+The study therefore does not claim that cropping improves external generalization. Its main conclusion is narrower: **reducing measured background nuisance sensitivity is not sufficient evidence of improved cross-domain discrimination.**
 
 ## Repository structure
 
 ```text
 .
+├── analysis/
+│   ├── README.md
+│   └── audit_predictions.py
 ├── notebooks/
 │   ├── 01_dataset_inspection.ipynb
 │   ├── 02_border_artifact_classifier.ipynb
@@ -67,13 +44,28 @@ For the recommended execution order and environment notes, see [`REPRODUCIBILITY
 ├── DATA_AVAILABILITY.md
 ├── REPRODUCIBILITY.md
 ├── requirements.txt
-└── README.md
+└── CITATION.cff
 ```
 
-## Research status
+The numbered notebooks document the historical workflow that led to the project. The `analysis/` directory documents the final reviewer-defense/audit stage. Large checkpoints, prediction arrays, evaluation caches, and raw datasets are not stored in GitHub.
 
-This repository documents an active research line. Publication metadata and a formal citation will be added when a stable archival version is available. Until then, cite the repository URL and access date if you build directly on this code.
+## Important reproducibility boundary
+
+The exact external evaluation in the final study used the project's already processed `Messidor_2/my_preprocessed` archive. It should not be described as evaluation on untouched raw Messidor-2 images, and the study did not perform a raw-vs-cropped factorial experiment on Messidor-2.
+
+The final submission/reproducibility archive contains the complete reviewer-defense script, final publication-upgrade notebook, saved prediction arrays, analysis tables, metadata, hashes, and figure-generation code. See [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for the relationship between the public repository and that archive.
+
+## Data
+
+- **APTOS 2019 Blindness Detection** — development dataset.
+- **Messidor-2** — external retinal dataset; the final experiment used the project's existing processed representation.
+
+Dataset images are not redistributed here. Users must obtain data from the official providers and follow their licenses and terms. See [DATA_AVAILABILITY.md](DATA_AVAILABILITY.md).
 
 ## Responsible use
 
-This code is provided for research and reproducibility. It is **not a clinical diagnostic system** and should not be used for patient-care decisions without appropriate validation, governance, and regulatory review.
+This repository is research code. It is **not a clinical diagnostic system** and the reported experiments do not establish a clinically validated operating point or prospective patient-level performance.
+
+## Citation
+
+Publication metadata will be added after the associated manuscript has a stable bibliographic record. Until then, cite the repository URL and access date when using this code directly.
