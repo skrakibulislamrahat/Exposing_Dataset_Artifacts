@@ -1,36 +1,24 @@
-# Reproducibility Guide
+# How to reproduce the project
 
-## What is final vs historical
+There are two parts to this repository:
 
-The six numbered notebooks in `notebooks/` document the original project development. They are retained for provenance, but they do **not** by themselves define the final 2026 12-model analysis.
+1. The six notebooks show the original development workflow.
+2. The later analysis added a second architecture, three training seeds, calibration, background tests, duplicate checks, and statistical analysis.
 
-The final manuscript uses a publication-upgrade workflow with:
+The notebooks are useful for following the project from the beginning, but they do not reproduce every number from the final 12-model study by themselves.
 
-- a fixed APTOS split (2,563 train / 549 validation / 550 test; split seed 2026),
-- ResNet-18 and EfficientNet-B0,
-- RAW and CLEAN training regimes,
-- seeds 13, 42, 77,
-- validation-only checkpoint/calibration/threshold choices,
-- common-input counterfactual background tests,
-- external evaluation on the project's existing processed Messidor-2 representation,
-- duplicate/near-duplicate auditing,
-- background-only and source-classification probes,
-- quantitative Grad-CAM,
-- paired and seed-aware bootstrap analyses.
+## What is available here
 
-The full final reviewer-defense script, publication-upgrade notebook, saved prediction arrays, metadata, analysis tables, environment record and hashes are distributed in the manuscript reproducibility archive rather than GitHub because several files are large.
+- Six notebooks for data inspection, source classification, raw-image training, border cropping, cleaned-image training, and external testing.
+- `analysis/audit_predictions.py`, which recalculates metrics from saved predictions and repeats the paired external bootstrap analysis.
+- `analysis/README.md`, which explains the files expected by the audit script.
+- The package list in `requirements.txt`.
 
-## Public repository
+The final archive also contains model checkpoints, saved predictions, counterfactual outputs, result tables, metadata, hashes, and the final experiment notebook. Those larger generated files are not stored in this GitHub repository.
 
-The public repository contains:
+## Notebook order
 
-1. Historical notebooks (`notebooks/01` through `06`).
-2. `analysis/audit_predictions.py`, which independently recomputes saved prediction-level metrics and the shared-image/paired-seed external bootstrap when run against the final reproducibility archive.
-3. `analysis/README.md`, which documents the expected final archive layout and audit checks.
-
-## Historical notebook order
-
-If reproducing the original development workflow, run:
+Run the notebooks in this order to follow the original workflow:
 
 1. `01_dataset_inspection.ipynb`
 2. `02_border_artifact_classifier.ipynb`
@@ -39,11 +27,11 @@ If reproducing the original development workflow, run:
 5. `05_train_model_without_artifacts.ipynb`
 6. `06_external_validation_messidor2.ipynb`
 
-Do not use those historical notebooks alone to reproduce the final manuscript numbers.
+The paths near the beginning of each notebook may need to be changed for a local or Google Drive setup.
 
-## Data layout used by the final project
+## Data paths used in Colab
 
-The completed Colab project used paths equivalent to:
+The completed project used this folder layout:
 
 ```text
 /content/drive/MyDrive/Fundus_Artifact_Project
@@ -53,45 +41,45 @@ The completed Colab project used paths equivalent to:
 /content/drive/MyDrive/Fundus_Artifact_Project/Messidor_2/grades.csv
 ```
 
-The external representation is important: the final experiment used the existing processed Messidor archive. It was **not** a raw-vs-clean Messidor preprocessing experiment.
+The Messidor-2 detail matters. The final external test used the already processed `my_preprocessed` images. It did not compare raw and cleaned Messidor-2 images. Using raw Messidor-2 files would not reproduce the same external experiment.
 
-## Final training protocol
+## Final training settings
 
-- Image size: 224 x 224.
-- Batch size: 32.
-- Maximum epochs: 12.
-- Early-stopping patience: 3.
-- Optimizer: AdamW.
-- Learning rate: 1e-4.
-- Weight decay: 1e-4.
-- Loss: `BCEWithLogitsLoss` with training-split positive weighting.
-- Initialization: torchvision ImageNet weights.
-- Augmentation: horizontal flip (0.5), vertical flip (0.5), rotation +/-10 degrees.
-- Model selection: best APTOS validation ROC-AUC.
-- Calibration: scalar temperature fitted on APTOS validation logits only.
-- Operating threshold: selected on APTOS validation for balanced accuracy and then frozen.
+- Image size: 224 x 224
+- Batch size: 32
+- Maximum epochs: 12
+- Early-stopping patience: 3
+- Optimizer: AdamW
+- Learning rate: 1e-4
+- Weight decay: 1e-4
+- Loss: `BCEWithLogitsLoss` with positive-class weighting calculated from the training split
+- Starting weights: torchvision ImageNet weights
+- Augmentation: horizontal flip with probability 0.5, vertical flip with probability 0.5, and rotation up to 10 degrees
+- Checkpoint selection: highest APTOS validation ROC-AUC
+- Calibration: one temperature value fitted only on APTOS validation logits
+- Threshold: selected for balanced accuracy on APTOS validation data and then kept fixed
 
-## Final analysis checks
+The final experiment used ResNet-18 and EfficientNet-B0, RAW and CLEAN training, and seeds 13, 42, and 77. The fixed APTOS split contained 2,563 training, 549 validation, and 550 test images.
 
-The independent audit recomputes ROC-AUC, average precision and Brier score from saved logits and verifies common-raw sensitivity means from the saved counterfactual arrays. It also recomputes an architecture-level external CLEAN-minus-RAW AUC interval using one stratified Messidor image resample shared across the three matched seed pairs, followed by paired seed resampling.
+## Prediction audit
 
-The final manuscript reports the limitations of this image-conditional inference: only three seeds are available, paired-eye grouping for the evaluated external metadata is unavailable, and the APTOS split cannot be claimed patient independent because patient identifiers are absent.
+The audit script recalculates ROC-AUC, average precision, and Brier score from saved logits. It also checks the background-sensitivity summaries and repeats the external CLEAN-minus-RAW bootstrap comparison.
+
+All models within one architecture were tested on the same Messidor-2 images. The bootstrap therefore uses the same class-stratified image resample for the matched RAW and CLEAN models, followed by paired resampling across the three seeds.
+
+This analysis still has limits. Only three seeds were used. Verified patient or paired-eye identifiers were not available for the external data, and APTOS did not include patient identifiers for a patient-independent split.
 
 ## Environment
 
-Install the packages in `requirements.txt`. GPU acceleration is needed for practical retraining and final model inference, but the independent saved-prediction audit is CPU-friendly.
+Install the packages listed in `requirements.txt`. A GPU is recommended for model training and inference. The saved-prediction audit can run on a CPU.
 
-The completed reviewer-defense run recorded the exact environment and checkpoint hashes in `environment_and_hashes.json` within the reproducibility archive.
+The final archive includes `environment_and_hashes.json`, which records the completed run's environment and checkpoint hashes.
 
-## Reproducibility boundaries
+## What cannot be reproduced from GitHub alone
 
-- Raw datasets are not redistributed.
-- Large checkpoints and saved prediction arrays are not stored in GitHub.
-- Exact reproduction of the processed Messidor pixels requires the same project archive; substituting raw Messidor images changes the evaluated representation.
-- APTOS metadata in the final split do not include patient identifiers.
-- Cross-split exact/perceptual/embedding redundancy is explicitly audited rather than assumed absent.
-- Framework/GPU nondeterminism can produce small run-to-run differences if models are retrained.
+- The raw datasets are not included.
+- Large model checkpoints and saved prediction arrays are not included.
+- Exact reproduction of the external pixels requires the same processed Messidor-2 archive.
+- Small differences can occur during retraining because of framework and GPU nondeterminism.
 
-## Verification record
-
-For an independent replication, record the dataset release, split file/hash, framework versions, hardware, all training seeds, preprocessing path, selected checkpoints, external representation, and any deviation from the final protocol above.
+For a new run, record the dataset release, split file or hash, package versions, hardware, random seeds, preprocessing path, selected checkpoints, external image representation, and any change from the settings above.

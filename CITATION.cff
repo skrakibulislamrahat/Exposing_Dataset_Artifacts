@@ -8,7 +8,7 @@ authors:
     orcid: "https://orcid.org/0009-0005-0744-8398"
 repository-code: "https://github.com/skrakibulislamrahat/Exposing_Dataset_Artifacts"
 url: "https://github.com/skrakibulislamrahat/Exposing_Dataset_Artifacts"
-abstract: "Reproducibility code for auditing artifact-driven shortcut learning in diabetic-retinopathy fundus-image models, including artifact-aware preprocessing, interpretability analysis, and external validation."
+abstract: "Code and documentation for comparing raw and border-cropped fundus-image models on APTOS 2019 and a processed Messidor-2 external test set."
 keywords:
   - trustworthy AI
   - medical imaging

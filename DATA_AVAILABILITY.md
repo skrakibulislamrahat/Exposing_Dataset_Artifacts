@@ -1,11 +1,11 @@
-# Data Availability
+# Data availability
 
-This repository does not redistribute retinal-image datasets.
+The retinal images are not included in this repository.
 
-The final study uses **APTOS 2019 Blindness Detection** for model development and an existing **processed Messidor-2 archive** for external evaluation. Obtain the underlying datasets from authorized sources and follow their licenses, access requirements, and terms of use.
+The project uses APTOS 2019 for training, validation, and internal testing. It uses 1,744 gradable images from the project's processed Messidor-2 archive for external testing. The original datasets must be obtained from their providers and used under their own licenses and access rules.
 
-Important reproducibility boundary: the final external experiment used the project-specific processed Messidor representation (`Messidor_2/my_preprocessed`). Substituting raw Messidor-2 images changes the evaluated input representation and does not reproduce the exact external experiment reported in the manuscript.
+The exact external test used `Messidor_2/my_preprocessed`. Using raw Messidor-2 images instead would change the input data and would not reproduce the reported experiment.
 
-The manuscript reproducibility archive contains saved prediction arrays, row-order metadata, numerical analysis tables, hashes, and analysis code. Source images and model checkpoint binaries are not redistributed through GitHub.
+The final project archive contains saved predictions, row-order metadata, result tables, hashes, and analysis code. Raw retinal images and model checkpoint files are not distributed through GitHub.
 
-Do not commit raw retinal images, dataset archives, credentials, personal data, or locally generated patient-linked files to this repository.
+Do not commit dataset archives, credentials, personal information, or patient-linked files to this repository.
