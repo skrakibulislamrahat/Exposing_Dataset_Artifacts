@@ -1,12 +1,12 @@
-# Final 2026 analysis audit
+# Prediction audit
 
-This directory documents the audit layer used for the final 12-model study.
+This folder contains the script used to check the saved predictions from the final 12-model experiment.
 
-The public six-notebook workflow predates the final publication-grade experiment. The final experiment uses a fixed APTOS split, two architectures (ResNet-18 and EfficientNet-B0), RAW/CLEAN training, and seeds 13/42/77. The complete reviewer-defense script and saved prediction arrays are distributed in the manuscript reproducibility archive because the prediction/counterfactual files are large.
+The original six notebooks were written earlier in the project. The final experiment used a fixed APTOS split, ResNet-18 and EfficientNet-B0, RAW and CLEAN training, and seeds 13, 42, and 77. The complete final archive is separate because the prediction and counterfactual files are too large for this repository.
 
-## `audit_predictions.py`
+## Files expected by `audit_predictions.py`
 
-The audit script expects to be placed beside the final archive folders:
+Place the script beside these folders from the final archive:
 
 ```text
 predictions/
@@ -14,17 +14,17 @@ tables/
 metadata/
 ```
 
-It performs two checks without model retraining or model inference:
+The script performs two checks:
 
-1. Recomputes ROC-AUC, average precision and Brier score from saved APTOS/Messidor logits and verifies common-raw counterfactual sensitivity means.
-2. Recomputes the architecture-level external CLEAN-minus-RAW AUC interval using one class-stratified Messidor image resample shared by all three matched seed pairs, followed by paired seed resampling (10,000 replicates).
+1. It recalculates ROC-AUC, average precision, and Brier score from saved APTOS and Messidor-2 logits. It also checks the saved background-sensitivity means.
+2. It repeats the external CLEAN-minus-RAW AUC bootstrap using the same class-stratified Messidor-2 image resample for each matched seed pair, followed by paired resampling across the three seeds.
 
-The shared-image procedure preserves the fact that all six models within an architecture were evaluated on the same external cohort. It remains image-conditional: the available evaluation metadata do not provide a verified paired-eye/patient grouping.
+The models were tested on the same external images, so the paired procedure keeps that shared test set in the comparison. It is still an image-level analysis because verified patient or paired-eye identifiers were not available.
 
-## Scientific interpretation
+## How to read the result
 
-The final analysis does not treat reduced background sensitivity as proof of improved generalization. On identical raw APTOS inputs, CLEAN training substantially reduces EfficientNet-B0 response to the selected background interventions, but EfficientNet external discrimination decreases. ResNet-18 starts with much lower measured background sensitivity and shows no consistent external improvement.
+CLEAN training made EfficientNet-B0 less responsive to the tested background changes, but its external discrimination decreased. ResNet-18 started with lower measured background sensitivity and did not show a consistent external improvement.
 
-The final APTOS split also contains cross-split exact and near-duplicate structure. The manuscript therefore does not claim patient-independent internal validation; sensitivity analyses exclude suspicious development-test neighbors to determine whether the principal internal findings are explained solely by those detected redundancies.
+APTOS also contained exact and near-duplicate images across splits. The final analysis removes suspicious development-test neighbors as a sensitivity check. Patient identifiers were unavailable, so the internal results are not described as patient-independent validation.
 
-See the repository-level `REPRODUCIBILITY.md` for the complete protocol and limitations.
+See [../REPRODUCIBILITY.md](../REPRODUCIBILITY.md) for the full settings and limitations.
